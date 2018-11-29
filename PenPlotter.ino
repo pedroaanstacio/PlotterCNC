@@ -5,8 +5,14 @@
 
 char STEP = MICROSTEP;
 
+const int penCima = 102;
+const int penBaixo = 80;
+
+const int pinoServo = 10;
+
 const int passosPorRevolucao = 48; 
 
+Servo ServoZ;  
 
 AF_Stepper motorEixoY(passosPorRevolucao,1);            
 AF_Stepper motorEixoX(passosPorRevolucao,2);  
@@ -38,13 +44,30 @@ float Xpos = Xmin;
 float Ypos = Ymin;
 float Zpos = Zmax; 
 
-void setup(){
+
+void setup() {
+  
   Serial.begin( 9600 );
   
+  ServoZ.attach(pinoServo);
+  ServoZ.write(penCima);
+  delay(100);
+
   motorEixoX.setSpeed(600);
-  motorEixoY.setSpeed(600); 
+  motorEixoY.setSpeed(600);  
   
- }
+  Serial.println("PenPlotter esta ativa!");
+  Serial.print("Alcance do eixo X:  "); 
+  Serial.print(Xmin); 
+  Serial.print(" a "); 
+  Serial.print(Xmax); 
+  Serial.println(" mm."); 
+  Serial.print("Alcance do eixo Y: "); 
+  Serial.print(Ymin); 
+  Serial.print(" a "); 
+  Serial.print(Ymax); 
+  Serial.println(" mm."); 
+}
 
 
 void loop() 
@@ -194,8 +217,10 @@ void processarLine( char* line, int endLine ) {
   }
 
 
+
 }
 
+ 
 void desenhar(float x1, float y1) {
 
   if (x1 >= Xmax) { 
@@ -255,4 +280,21 @@ void desenhar(float x1, float y1) {
   //  atualiza posição da caneta
   Xpos = x1;
   Ypos = y1;
+}
+
+void penSobe() { 
+  ServoZ.write(penCima); 
+  delay(penDelay); 
+  Zpos=Zmax; 
+  digitalWrite(15, LOW);
+    digitalWrite(16, HIGH);
+}
+
+void penDesce() { 
+  ServoZ.write(penBaixo); 
+  delay(penDelay); 
+  Zpos=Zmin; 
+  digitalWrite(15, HIGH);
+    digitalWrite(16, LOW);
+ 
 }
